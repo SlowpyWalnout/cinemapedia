@@ -8,9 +8,9 @@ class CustomBottomNavigation extends StatelessWidget {
     return BottomNavigationBar(
       elevation: 0,
       items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_max), label: 'Inicio'),
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
         BottomNavigationBarItem(
-          icon: Icon(Icons.label_outline),
+          icon: Icon(Icons.view_cozy_outlined),
           label: 'Categorías',
         ),
         BottomNavigationBarItem(
