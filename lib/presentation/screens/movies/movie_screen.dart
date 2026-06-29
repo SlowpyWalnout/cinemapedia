@@ -91,7 +91,7 @@ class _MovieDetails extends StatelessWidget {
           ),
         ),
 
-        // todo: generos de la pelicula
+        // generos de la pelicula
         Padding(
           padding: const EdgeInsets.all(8),
           child: Wrap(
@@ -108,7 +108,7 @@ class _MovieDetails extends StatelessWidget {
             ],
           ),
         ),
-        // todo: mostrar actores listview
+        // mostrar actores listview
         _ActorsByMovie(movieId: movie.id.toString()),
         const SizedBox(height: 10),
       ],

@@ -7,7 +7,7 @@ class ActorMapper {
     name: cast.name,
     profilePath: cast.profilePath != null
         ? 'https://image.tmdb.org/t/p/w500${cast.profilePath}'
-        : 'https://img.magnific.com/premium-vector/default-profile-picture-icon-high-resolution_852381-3658.jpg?semt=ais_hybrid&w=740&q=80',
+        : 'https://i.sstatic.net/l60Hf.png',
     character: cast.character,
   );
 }
