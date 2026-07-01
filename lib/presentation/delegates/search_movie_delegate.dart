@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/config/helpers/human_formats.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
@@ -7,8 +9,19 @@ typedef SearchMoviesCallback = Future<List<Movie>> Function(String query);
 
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
   final SearchMoviesCallback searchMovies;
+  StreamController<List<Movie>> debouncedMovies = StreamController.broadcast();
+  Timer? _debounceTimer;
 
   SearchMovieDelegate({required this.searchMovies});
+
+  void _onQueryChanged(String query) {
+    print('Query string cambió');
+
+    if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      // todo buscar peliculas y emitir al stream
+    });
+  }
 
   @override
   String get searchFieldLabel => 'Buscar película';
@@ -43,10 +56,14 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
       return const Center(child: Text('Busca una pelicula'));
     }
 
-    return FutureBuilder(
-      future: searchMovies(query),
+    _onQueryChanged(query);
 
+    return StreamBuilder(
+      //future: searchMovies(query),
+      stream: debouncedMovies.stream,
       builder: (context, snapshot) {
+        //! print('realizando petición')
+
         final movies = snapshot.data ?? [];
 
         return ListView.builder(
