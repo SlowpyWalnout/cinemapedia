@@ -13,13 +13,27 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   Timer? _debounceTimer;
 
   SearchMovieDelegate({required this.searchMovies});
+  void clearStreams() {
+    _debounceTimer?.cancel();
+    if (!debouncedMovies.isClosed) {
+      debouncedMovies.close();
+    }
+  }
 
   void _onQueryChanged(String query) {
-    print('Query string cambió');
-
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
-    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-      // todo buscar peliculas y emitir al stream
+
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
+      if (query.isEmpty) {
+        debouncedMovies.add([]);
+        return;
+      }
+      final movies = await searchMovies(query);
+      print('Resultados: ${movies.length}');
+
+      if (!debouncedMovies.isClosed) {
+        debouncedMovies.add(movies);
+      }
     });
   }
 
@@ -40,7 +54,10 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   @override
   Widget? buildLeading(BuildContext context) {
     return IconButton(
-      onPressed: () => close(context, null),
+      onPressed: () {
+        clearStreams();
+        close(context, null);
+      },
       icon: Icon(Icons.arrow_back_ios_rounded),
     );
   }
@@ -68,8 +85,13 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
         return ListView.builder(
           itemCount: movies.length,
-          itemBuilder: (context, index) =>
-              _MovieItem(movie: movies[index], onMovieSelected: close),
+          itemBuilder: (context, index) => _MovieItem(
+            movie: movies[index],
+            onMovieSelected: (context, movie) {
+              clearStreams();
+              close(context, movie);
+            },
+          ),
         );
       },
     );
@@ -78,7 +100,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
 class _MovieItem extends StatelessWidget {
   final Movie movie;
-  final Function onMovieSelected;
+  final void Function(BuildContext, Movie) onMovieSelected;
 
   const _MovieItem({required this.movie, required this.onMovieSelected});
 

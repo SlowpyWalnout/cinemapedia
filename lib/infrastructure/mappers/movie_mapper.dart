@@ -16,7 +16,7 @@ class MovieMapper {
     popularity: moviedb.popularity,
     posterPath: (moviedb.posterPath != '')
         ? 'https://image.tmdb.org/t/p/w500${moviedb.posterPath}'
-        : 'no-poster',
+        : 'https://dynamoprojects.com/wp-content/uploads/2022/12/no-image.jpg',
     releaseDate: moviedb.releaseDate,
     title: moviedb.title,
     video: moviedb.video,
