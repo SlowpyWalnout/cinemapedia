@@ -26,12 +26,11 @@ class CustomAppbar extends ConsumerWidget {
               Text('cinemapedia', style: titleStyle),
               Spacer(),
               IconButton(
-                onPressed: () {
-                  //todo
+                onPressed: () async {
                   final searchedMovies = ref.read(searchedMoviesProvider);
                   final searchQuery = ref.read(searchQueryProvider);
 
-                  showSearch<Movie?>(
+                  final movie = await showSearch<Movie?>(
                     query: searchQuery,
                     context: context,
                     delegate: SearchMovieDelegate(
@@ -40,14 +39,16 @@ class CustomAppbar extends ConsumerWidget {
                           .read(searchedMoviesProvider.notifier)
                           .searchMoviesByQuery,
                     ),
-                  ).then((movie) {
-                    if (movie == null) {
-                      ref.read(searchedMoviesProvider.notifier).clearSearch();
-                      return;
-                    }
+                  );
 
-                    context.push('/movie/${movie.id}');
-                  });
+                  if (!context.mounted) return;
+
+                  if (movie == null) {
+                    ref.read(searchedMoviesProvider.notifier).clearSearch();
+                    return;
+                  }
+
+                  context.push('/movie/${movie.id}');
                 },
                 icon: const Icon(Icons.search),
               ),
