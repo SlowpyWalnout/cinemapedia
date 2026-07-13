@@ -217,13 +217,7 @@ class _CustomSliverAppBar extends StatelessWidget {
                 },
               ),
             ),
-            //Sombra del borde inferior de la imagen
-            _CustomGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0.7, 1.0],
-              colors: [Colors.transparent, Colors.black87],
-            ),
+
             //Sombra del boton back.
             _CustomGradient(
               begin: Alignment.topLeft,
@@ -238,6 +232,14 @@ class _CustomSliverAppBar extends StatelessWidget {
               end: Alignment.bottomLeft,
               stops: [0.0, 0.4],
               colors: [Colors.black87, Colors.transparent],
+            ),
+
+            //Sombra del borde inferior de la imagen
+            _CustomGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: [0.7, 1.0],
+              colors: [Colors.transparent, Colors.black87],
             ),
           ],
         ),
