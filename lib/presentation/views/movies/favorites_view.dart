@@ -6,8 +6,12 @@ class FavoritesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Favorites view')),
-      body: const Center(child: Text('Favoritos')),
+      body: ListView.builder(
+        itemCount: 10,
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(title: Text('movie name'));
+        },
+      ),
     );
   }
 }
