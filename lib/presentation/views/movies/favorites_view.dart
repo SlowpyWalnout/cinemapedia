@@ -28,7 +28,11 @@ class _FavoritesViewState extends ConsumerState<FavoritesView> {
         preferredSize: Size.fromHeight(kToolbarHeight),
         child: CustomAppbar(),
       ),
-      body: MovieMasonry(movies: myMovieList),
+      body: MovieMasonry(
+        movies: myMovieList,
+        loadNextPage: () =>
+            ref.read(favoriteMoviesProvider.notifier).loadNextPage(),
+      ),
     );
   }
 }
