@@ -25,7 +25,7 @@ class _MovieMasonryState extends State<MovieMasonry> {
   @override
   Widget build(BuildContext context) {
     return MasonryGridView.count(
-      padding: const EdgeInsets.fromLTRB(16, 80, 16, 16),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       crossAxisCount: 3,
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,

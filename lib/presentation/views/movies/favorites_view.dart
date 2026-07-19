@@ -1,5 +1,6 @@
 import 'package:cinemapedia/presentation/screens/storage/favorite_movies_provider.dart';
 import 'package:cinemapedia/presentation/widgets/movies/movies_masonry.dart';
+import 'package:cinemapedia/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,6 +23,12 @@ class _FavoritesViewState extends ConsumerState<FavoritesView> {
     final favoriteMovies = ref.watch(favoriteMoviesProvider);
     final myMovieList = favoriteMovies.values.toList();
 
-    return Scaffold(body: MovieMasonry(movies: myMovieList));
+    return Scaffold(
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: CustomAppbar(),
+      ),
+      body: MovieMasonry(movies: myMovieList),
+    );
   }
 }
