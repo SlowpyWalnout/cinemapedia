@@ -11,7 +11,8 @@ class FavoritesView extends ConsumerStatefulWidget {
   ConsumerState<FavoritesView> createState() => _FavoritesViewState();
 }
 
-class _FavoritesViewState extends ConsumerState<FavoritesView> {
+class _FavoritesViewState extends ConsumerState<FavoritesView>
+    with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     ref.read(favoriteMoviesProvider.notifier).loadNextPage();
@@ -20,18 +21,23 @@ class _FavoritesViewState extends ConsumerState<FavoritesView> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final favoriteMovies = ref.watch(favoriteMoviesProvider);
     final myMovieList = favoriteMovies.values.toList();
     final emptystateIconColor = Theme.of(context).colorScheme.secondary;
     final emptyStateTextColor = Theme.of(context).colorScheme.tertiary;
     if (myMovieList.isEmpty) {
       return Scaffold(
+        appBar: const PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight),
+          child: CustomAppbar(),
+        ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.heart_broken_rounded,
+                Icons.favorite_rounded,
                 size: 100,
                 color: emptystateIconColor,
               ),
@@ -58,4 +64,7 @@ class _FavoritesViewState extends ConsumerState<FavoritesView> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
