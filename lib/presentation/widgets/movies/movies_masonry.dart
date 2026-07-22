@@ -5,7 +5,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class MovieMasonry extends StatefulWidget {
   final List<Movie> movies;
-  final Future<List<Movie>> Function()? loadNextPage;
+  // final Future<List<Movie>> Function()? loadNextPage;
+  final Future<List<Movie>?> Function()? loadNextPage;
 
   const MovieMasonry({super.key, required this.movies, this.loadNextPage});
 
@@ -38,22 +39,29 @@ class _MovieMasonryState extends State<MovieMasonry> {
     super.dispose();
   }
 
-  void loadNextPageMovies() async {
+  Future<void> loadNextPageMovies() async {
     if (isLoading || isLastPage) return;
     if (widget.loadNextPage == null) return;
-    isLoading = true;
-    final movies = await widget.loadNextPage!();
-    isLoading = false;
 
-    if (movies.isEmpty) {
-      isLastPage = true;
+    isLoading = true;
+
+    try {
+      final movies = await widget.loadNextPage!();
+
+      if (movies == null) return;
+
+      if (movies.isEmpty) {
+        isLastPage = true;
+      }
+    } finally {
+      isLoading = false;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsetsGeometry.fromLTRB(16, 0, 16, 0),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
       child: MasonryGridView.count(
         controller: scrollController,
         crossAxisCount: 3,

@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   static const List<Widget> viewRoutes = [
     HomeView(),
-    SizedBox(),
+    PopularsView(),
     FavoritesView(),
   ];
   @override
