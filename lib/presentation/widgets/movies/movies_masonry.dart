@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:cinemapedia/presentation/widgets/movies/movie_poster_link.dart';
 import 'package:flutter/material.dart';
@@ -70,15 +73,29 @@ class _MovieMasonryState extends State<MovieMasonry> {
         itemCount: widget.movies.length,
         itemBuilder: (context, index) {
           final movie = widget.movies[index];
+          final random = Random(movie.id);
+
+          //delay estable entre 50 y 300 milisegundos
+          final delay = Duration(milliseconds: 100 + random.nextInt(400));
+          //duracion estable entre 350 y 650 milisegundos.
+          final duration = Duration(milliseconds: 350 + random.nextInt(600));
 
           // Alterna la altura de los pósters
           final double height = (index % 5 == 0) ? 260 : 180;
 
-          return SizedBox(
-            height: height,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: MoviePosterLink(movie: movie),
+          return FadeInUp(
+            key: ValueKey(movie.id),
+            delay: delay,
+            duration: duration,
+
+            child: SizedBox(
+              height: height,
+              child: FadeInUp(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: MoviePosterLink(movie: movie),
+                ),
+              ),
             ),
           );
         },
