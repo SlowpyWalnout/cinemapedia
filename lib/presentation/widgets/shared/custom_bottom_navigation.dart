@@ -26,13 +26,13 @@ class CustomBottomNavigation extends StatelessWidget {
         onItemTapped(context, value);
       },
       items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
+        BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Catalogo'),
         BottomNavigationBarItem(
-          icon: Icon(Icons.view_cozy_outlined),
-          label: 'Categorías',
+          icon: Icon(Icons.trending_up_rounded),
+          label: 'Populares',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.favorite_outline),
+          icon: Icon(Icons.favorite_border_outlined),
           label: 'Favoritos',
         ),
       ],
