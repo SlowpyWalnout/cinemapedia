@@ -62,11 +62,21 @@ class _MovieMasonryState extends State<MovieMasonry> {
   }
 
   @override
+  void didUpdateWidget(covariant MovieMasonry oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.movies.length < oldWidget.movies.length) {
+      isLastPage = false;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
       child: MasonryGridView.count(
         controller: scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
         crossAxisCount: 3,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,

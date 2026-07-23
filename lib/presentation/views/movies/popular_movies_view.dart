@@ -15,7 +15,10 @@ class _PopularsViewState extends ConsumerState<PopularsView>
   @override
   void initState() {
     super.initState();
-    ref.read(popularMoviesProvider.notifier).loadNextPage();
+    final popularMovies = ref.read(popularMoviesProvider);
+    if (popularMovies.isEmpty) {
+      ref.read(popularMoviesProvider.notifier).loadNextPage();
+    }
   }
 
   @override
@@ -23,11 +26,16 @@ class _PopularsViewState extends ConsumerState<PopularsView>
     super.build(context);
     final popularMovies = ref.watch(popularMoviesProvider);
     return Scaffold(
-      body: MovieMasonry(
-        movies: popularMovies,
-        loadNextPage: () {
+      body: RefreshIndicator(
+        onRefresh: () {
           return ref.read(popularMoviesProvider.notifier).loadNextPage();
         },
+        child: MovieMasonry(
+          movies: popularMovies,
+          loadNextPage: () {
+            return ref.read(popularMoviesProvider.notifier).loadNextPage();
+          },
+        ),
       ),
     );
   }

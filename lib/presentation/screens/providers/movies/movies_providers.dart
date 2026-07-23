@@ -58,4 +58,19 @@ class MoviesNotifier extends StateNotifier<List<Movie>> {
       isLoading = false;
     }
   }
+
+  Future<void> reloadMovies() async {
+    if (isLoading) return;
+
+    isLoading = true;
+
+    try {
+      final movies = await fetchMoreMovies(page: 1);
+
+      currentPage = 1;
+      state = movies;
+    } finally {
+      isLoading = false;
+    }
+  }
 }
