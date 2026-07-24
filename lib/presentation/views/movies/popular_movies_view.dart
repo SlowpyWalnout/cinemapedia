@@ -12,6 +12,7 @@ class PopularsView extends ConsumerStatefulWidget {
 
 class _PopularsViewState extends ConsumerState<PopularsView>
     with AutomaticKeepAliveClientMixin<PopularsView> {
+  int reloadVersion = 0;
   @override
   void initState() {
     super.initState();
@@ -21,16 +22,30 @@ class _PopularsViewState extends ConsumerState<PopularsView>
     }
   }
 
+  Future<void> reloadPopularMovies() async {
+    await ref.read(popularMoviesProvider.notifier).reloadMovies();
+    if (!mounted) return;
+    setState(() {
+      reloadVersion++;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final popularMovies = ref.watch(popularMoviesProvider);
+
+    debugPrint(
+      'PopularsView build: '
+      '${popularMovies.length} peliculas'
+      'version $reloadVersion',
+    );
+
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () {
-          return ref.read(popularMoviesProvider.notifier).loadNextPage();
-        },
+        onRefresh: reloadPopularMovies,
         child: MovieMasonry(
+          key: ValueKey('popular-masonry$reloadVersion'),
           movies: popularMovies,
           loadNextPage: () {
             return ref.read(popularMoviesProvider.notifier).loadNextPage();

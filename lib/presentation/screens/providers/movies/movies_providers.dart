@@ -68,7 +68,7 @@ class MoviesNotifier extends StateNotifier<List<Movie>> {
       final movies = await fetchMoreMovies(page: 1);
 
       currentPage = 1;
-      state = movies;
+      state = [...movies];
     } finally {
       isLoading = false;
     }

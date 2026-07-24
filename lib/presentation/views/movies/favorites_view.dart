@@ -53,10 +53,6 @@ class _FavoritesViewState extends ConsumerState<FavoritesView>
     }
 
     return Scaffold(
-      // appBar: const PreferredSize(
-      //   preferredSize: Size.fromHeight(kToolbarHeight),
-      //   child: CustomAppbar(),
-      // ),
       body: MovieMasonry(
         movies: myMovieList,
         loadNextPage: () =>
