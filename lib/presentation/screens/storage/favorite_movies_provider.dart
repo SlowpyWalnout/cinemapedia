@@ -43,4 +43,6 @@ class StorageMoviesNotifier extends StateNotifier<Map<int, Movie>> {
 
     state = {...state, movie.id: movie};
   }
+
+  Future<void> reloadMovies() async {}
 }
