@@ -1,6 +1,8 @@
 import 'package:cinemapedia/presentation/screens/providers/movies/movie_trailer_provider.dart';
+import 'package:cinemapedia/presentation/screens/providers/movies/movies_providers.dart';
 import 'package:cinemapedia/presentation/screens/storage/favorite_movies_provider.dart';
 import 'package:cinemapedia/presentation/screens/storage/is_favorite_movie_provider.dart';
+import 'package:cinemapedia/presentation/widgets/movies/movie_horizontal_listview.dart';
 import 'package:cinemapedia/presentation/widgets/shared/youtube_trailer_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,11 +29,13 @@ class MovieScreenState extends ConsumerState<MovieScreen> {
     super.initState();
     ref.read(movieInfoProvider.notifier).loadMovie(widget.movieId);
     ref.read(actorsByMovieProvider.notifier).loadActors(widget.movieId);
+    ref.read(similarMoviesProvider(widget.movieId).notifier).loadNextPage();
   }
 
   @override
   Widget build(BuildContext context) {
     final Movie? movie = ref.watch(movieInfoProvider)[widget.movieId];
+    final similarMovies = ref.watch(similarMoviesProvider(widget.movieId));
 
     if (movie == null) {
       return Scaffold(
@@ -46,7 +50,15 @@ class MovieScreenState extends ConsumerState<MovieScreen> {
           _CustomSliverAppBar(movie: movie),
           SliverList(
             delegate: SliverChildBuilderDelegate(
-              (context, index) => _MovieDetails(movie: movie),
+              (context, index) => _MovieDetails(
+                movie: movie,
+                similarMovies: similarMovies,
+                loadNextPage: () {
+                  return ref
+                      .read(similarMoviesProvider(widget.movieId).notifier)
+                      .loadNextPage();
+                },
+              ),
               childCount: 1,
             ),
           ),
@@ -58,7 +70,14 @@ class MovieScreenState extends ConsumerState<MovieScreen> {
 
 class _MovieDetails extends StatelessWidget {
   final Movie movie;
-  const _MovieDetails({required this.movie});
+  final List<Movie> similarMovies;
+  final Future<List<Movie>?> Function() loadNextPage;
+
+  const _MovieDetails({
+    required this.movie,
+    required this.similarMovies,
+    required this.loadNextPage,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -114,9 +133,21 @@ class _MovieDetails extends StatelessWidget {
         ),
         //mostrar trailer de la película
         _MovieTrailer(movieId: movie.id.toString()),
-        // mostrar actores listview
+        const SizedBox(height: 32),
+
+        //mostrar actores listview
         _ActorsByMovie(movieId: movie.id.toString()),
+
+        //mostrar peliculas relacionadas
+        MovieHorizontalListview(
+          movies: similarMovies,
+          title: 'Recomendadas',
+
+          loadNextPage: loadNextPage,
+        ),
         const SizedBox(height: 10),
+
+        //
       ],
     );
   }
@@ -174,7 +205,7 @@ class _ActorsByMovie extends ConsumerWidget {
     final actors = actorsByMovie[movieId]!;
 
     return SizedBox(
-      height: 300,
+      height: 280,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: actors.length,
@@ -257,51 +288,69 @@ class _CustomSliverAppBar extends ConsumerWidget {
         ),
       ],
 
-      flexibleSpace: FlexibleSpaceBar(
-        titlePadding: const EdgeInsetsDirectional.only(start: 16, bottom: 16),
-        // title: Text(
-        //   movie.title,
-        //   style: const TextStyle(fontSize: 20, color: Colors.white),
-        //   textAlign: TextAlign.start,
-        // ),
-        background: Stack(
-          children: [
-            SizedBox.expand(
-              child: Image.network(
-                movie.posterPath,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress != null) return const SizedBox();
-                  return FadeIn(child: child);
-                },
-              ),
-            ),
+      flexibleSpace: LayoutBuilder(
+        builder: (context, constraints) {
+          final expandedHeight = size.height * 0.7;
 
-            //Sombra del boton back.
-            _CustomGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              stops: [0.0, 0.4],
-              colors: [Colors.black87, Colors.transparent],
-            ),
+          final collapsedHeight =
+              kToolbarHeight + MediaQuery.paddingOf(context).top;
 
-            //Sombra del boton de favoritos
-            _CustomGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-              stops: [0.0, 0.4],
-              colors: [Colors.black87, Colors.transparent],
-            ),
+          final currentHeight = constraints.biggest.height;
 
-            //Sombra del borde inferior de la imagen
-            _CustomGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0.7, 1.0],
-              colors: [Colors.transparent, Colors.black87],
+          final scrollProgress =
+              ((expandedHeight - currentHeight) /
+                      (expandedHeight - collapsedHeight))
+                  .clamp(0.0, 1.0);
+
+          return FlexibleSpaceBar(
+            collapseMode: CollapseMode.parallax,
+            background: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.network(
+                  movie.posterPath,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress != null) {
+                      return const SizedBox();
+                    }
+
+                    return FadeIn(child: child);
+                  },
+                ),
+
+                // Sombra del botón back
+                _CustomGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  stops: const [0.0, 0.4],
+                  colors: const [Colors.black87, Colors.transparent],
+                ),
+
+                // Sombra del botón de favoritos
+                _CustomGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  stops: const [0.0, 0.4],
+                  colors: const [Colors.black87, Colors.transparent],
+                ),
+
+                // Sombra inferior
+                _CustomGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: const [0.7, 1.0],
+                  colors: const [Colors.transparent, Colors.black87],
+                ),
+
+                // Capa que se oscurece conforme haces scroll
+                ColoredBox(
+                  color: Colors.black.withValues(alpha: scrollProgress * 0.75),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
