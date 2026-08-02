@@ -83,7 +83,10 @@ class _MovieDetails extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(movie.title, style: textStyles.titleLarge),
+                    Text(
+                      '${movie.title} ${movie.video}',
+                      style: textStyles.titleLarge,
+                    ),
                     const SizedBox(height: 8),
                     Text(movie.overview, style: textStyles.bodyLarge),
                   ],
@@ -115,6 +118,16 @@ class _MovieDetails extends StatelessWidget {
         const SizedBox(height: 10),
       ],
     );
+  }
+}
+
+class _MovieTrailer extends ConsumerWidget {
+  final String movieId;
+  const _MovieTrailer({required this.movieId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SizedBox(height: 300);
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:cinemapedia/config/constants/environment.dart';
 import 'package:cinemapedia/domain/datasources/movies_datasource.dart';
 import 'package:cinemapedia/infrastructure/models/moviedb/moviedb_response.dart';
+import 'package:cinemapedia/infrastructure/models/moviedb/movie_video.dart';
 import 'package:cinemapedia/infrastructure/mappers/movie_mapper.dart';
 import 'package:cinemapedia/domain/entities/movie.dart';
 
@@ -75,6 +76,24 @@ class MoviedbDatasource extends MoviesDatasource {
     final movieDetails = MovieDetails.fromJson(response.data);
     final Movie movie = MovieMapper.movieDetailsToEntity(movieDetails);
     return movie;
+  }
+
+  @override
+  Future<String?> getMovieTrailer(String movieId) async {
+    final response = await dio.get('/movie/$movieId/videos');
+    final movieVideosResponse = MovieVideosResponse.fromJson(response.data);
+    final videos = movieVideosResponse.results;
+    for (final video in videos) {
+      if (video.site == 'YouTube' && video.type == 'Trailer') {
+        return video.key;
+      }
+    }
+    for (final video in videos) {
+      if (video.site == 'YouTube' && video.type == 'Teaser') {
+        return video.key;
+      }
+    }
+    return null;
   }
 
   @override
