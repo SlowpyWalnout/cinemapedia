@@ -4,6 +4,6 @@ class AppTheme {
   ThemeData getTheme() => ThemeData(
     useMaterial3: true,
     colorSchemeSeed: Colors.blue,
-    brightness: Brightness.dark,
+    brightness: Brightness.light,
   );
 }

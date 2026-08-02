@@ -1,5 +1,7 @@
+import 'package:cinemapedia/presentation/screens/providers/movies/movie_trailer_provider.dart';
 import 'package:cinemapedia/presentation/screens/storage/favorite_movies_provider.dart';
 import 'package:cinemapedia/presentation/screens/storage/is_favorite_movie_provider.dart';
+import 'package:cinemapedia/presentation/widgets/shared/youtube_trailer_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animate_do/animate_do.dart';
@@ -83,10 +85,7 @@ class _MovieDetails extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '${movie.title} ${movie.video}',
-                      style: textStyles.titleLarge,
-                    ),
+                    Text(movie.title, style: textStyles.titleLarge),
                     const SizedBox(height: 8),
                     Text(movie.overview, style: textStyles.bodyLarge),
                   ],
@@ -113,6 +112,8 @@ class _MovieDetails extends StatelessWidget {
             ],
           ),
         ),
+        //mostrar trailer de la película
+        _MovieTrailer(movieId: movie.id.toString()),
         // mostrar actores listview
         _ActorsByMovie(movieId: movie.id.toString()),
         const SizedBox(height: 10),
@@ -123,11 +124,39 @@ class _MovieDetails extends StatelessWidget {
 
 class _MovieTrailer extends ConsumerWidget {
   final String movieId;
+
   const _MovieTrailer({required this.movieId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SizedBox(height: 300);
+    final trailerAsync = ref.watch(movieTrailerProvider(movieId));
+
+    return trailerAsync.when(
+      loading: () => const SizedBox(
+        height: 220,
+        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+      ),
+      error: (error, stackTrace) => const SizedBox.shrink(),
+      data: (videoId) {
+        if (videoId == null || videoId.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(40),
+                child: YoutubeTrailerPlayer(videoId: videoId),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 
