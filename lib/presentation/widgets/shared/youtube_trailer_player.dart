@@ -22,17 +22,51 @@ class _YoutubeTrailerPlayerState extends State<YoutubeTrailerPlayer> {
   YoutubePlayerController _createController() {
     return YoutubePlayerController.fromVideoId(
       videoId: widget.videoId,
-      autoPlay: false,
+      autoPlay: true,
       params: const YoutubePlayerParams(
-        showControls: false,
-        showFullscreenButton: true,
+        mute: false,
+        enableCaption: false,
+        captionLanguage: 'es',
+        interfaceLanguage: 'es',
+        showVideoAnnotations: false,
+        loop: false,
+        strictRelatedVideos: true,
+        privacyEnhancedMode: true,
+        playsInline: true,
+        enableKeyboard: true,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return YoutubePlayer(controller: controller, aspectRatio: 16 / 9);
+    return Theme(
+      data: Theme.of(context).copyWith(
+        extensions: const [
+          YoutubePlayerTheme(
+            progressBarActiveColor: Colors.red,
+            progressBarBufferedColor: Colors.redAccent,
+            progressBarBackgroundColor: Colors.white24,
+            controlsColor: Colors.white,
+            timerStyle: TextStyle(color: Colors.white, fontSize: 12),
+            titleStyle: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+      child: YoutubePlayer(
+        controller: controller,
+        aspectRatio: 16 / 9,
+        autoHideDuration: const Duration(seconds: 3),
+        backgroundColor: Colors.black,
+        autoFullScreen: true,
+        enableFullScreenOnVerticalDrag: true,
+        keepAlive: false,
+      ),
+    );
   }
 
   @override
